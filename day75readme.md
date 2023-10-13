@@ -193,3 +193,16 @@ x1.plot(x, df_ue_search_vs_rate.UNRATE)
 x2.plot(x, df_ue_search_vs_rate.UE_BENEFITS_WEB_SEARCH)
 
 ```
+
+## Learning Points and Summary
+
+* Use `.describe()` to quickly see some descriptive statistics at a glance
+* How to use resample() to make time-series data comparable to another by changing the periodicity
+* How to work with matplotlib.dates Locators to better style a timeline (e.g., an axis on a chart)
+* How to find the number of NaN values with isna().values.sum()
+* How to change the resolution of a chart using the figures dpi
+* How to created dashed and dotted lines using `linestyles`
+* How to use different kinds of markers (e.g., `o` or `^`) on charts
+* fine-tuning the styling of matplotlib charts by using limits, labels, linewidth and colours
+* using .grid() to help visually identify seasonality in a time series
+* 

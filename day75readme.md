@@ -1,3 +1,11 @@
+---
+tags:
+  - pandas
+  - resample
+  - isna
+  - time-series
+  - data
+---
 ## Combine google Trends with other Time Series Data
 
 What can the poularity of search terms tel us about the wrold? Google Trends gives us access to the popularity of Google Search terms. Let's investigate:
@@ -67,7 +75,7 @@ df_btc_price[df_btc_price.isna().any(axis=1)]
 
 returns a dataframe with all the rows containing NaN values
 
-### Number of NaN values
+## Number of NaN values
 
 ```pythong
 print(f'Number of missing values: ')
@@ -84,3 +92,104 @@ use `.resample()` to convert daily data (df_btc_price) to monthly data (df_btc_s
 * Specify sample frequency (the 'rule')
 `df_btc_end_month_price = df_btc_price.resample(rule='M', on='DATE').last()`
 avg `df_btc_end_month_price = df_btc_price.resample(rule='M', on='DATE').mean()`
+
+## Data Visualization
+
+* Plot the Tesla stock price against the Tesla search volume using a line chart and two different axes.
+[[day74readme#Let's use two separate axes]]
+
+```python
+df_tesla.head()
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+ax1.set_xlabel("Months")
+ax1.set_ylabel("Tesla Web Searches")
+ax2.set_ylabel("Tesla Stock Price")
+ax1.plot(df_tesla.MONTH, df_tesla.TSLA_WEB_SEARCH, color="purple")
+ax2.plot(df_tesla.MONTH, df_tesla.TSLA_USD_CLOSE)
+```
+
+
+```python
+# Create locators for ticks on the time axis
+chart_figure = plt.figure(figsize=(14, 8), dpi=200)
+plt.title("Tesla Web Search vs Price", fontsize=16)
+plt.xticks(fontsize=14, rotation=45)
+ax1 = plt.gca()
+ax1.set_xlim(df_tesla.MONTH[0], df_tesla.MONTH[len(df_tesla.MONTH) - 1])
+ax1.set_ylim(0, df_tesla.TSLA_WEB_SEARCH.max())
+ax2 = ax1.twinx()
+ax2.set_ylim(0, df_tesla.TSLA_USD_CLOSE.max())
+ax1.set_xlabel("Months", fontsize=14)
+ax1.set_ylabel("Tesla Web Searches", color="purple", fontsize=14)
+ax2.set_ylabel("Tesla Stock Price", color="#FF0000", fontsize=14)
+ax1.plot(df_tesla.MONTH, df_tesla.TSLA_WEB_SEARCH, color="purple", linewidth=3)
+ax2.plot(df_tesla.MONTH, df_tesla.TSLA_USD_CLOSE, color="#FF0000", linewidth=3)
+chart_figure.get_dpi()
+plt.show()
+```
+
+## Using Locators and DateFormatter
+
+Locators are useful for getting your tick marks to appear the way you want them to when working with time series data
+
+Import `matplotlib.dates`
+use `YearLocator()` and `MonthLocator()`
+`DateFormatter()` will help us specify how we want to display the dates
+
+```python
+ax1 = plt.gca()
+ax1.xaxis.set_major_locator(years)
+ax1.xaxis.set_major_formatter(years_fmt)
+ax1.xaxis.set_minor_locator(months)
+ax1.set_xlim(df_tesla.MONTH[0], df_tesla.MONTH[len(df_tesla.MONTH) - 1])
+ax1.set_ylim(0, df_tesla.TSLA_WEB_SEARCH.max())
+ax2 = ax1.twinx()
+```
+
+### Plotting btc price vs search volume
+
+#grid
+#locators
+
+
+```python
+chart_figure = plt.figure(figsize=(14, 8), dpi=200)
+resampled_btc_price = df_btc_price.resample(rule="M", on="DATE")
+
+plt.title("Bitcoin News Search vs Resampled Price", fontsize=16)
+plt.xticks(fontsize=14, rotation=45)
+ax1 = plt.gca()
+ax1.xaxis.set_major_locator(years)
+ax1.xaxis.set_major_formatter(years_fmt)
+ax1.xaxis.set_minor_locator(months)
+
+ax1.set_xlim(df_btc_search.MONTH.min(), resampled_btc_price.last().index.max())
+ax1.set_ylim(0, resampled_btc_price.mean().CLOSE.max() + 2000)
+
+ax2 = ax1.twinx()
+
+ax2.set_ylim(0, df_btc_search.BTC_NEWS_SEARCH.max())
+ax1.set_xlabel("Months", fontsize=14)
+ax1.set_ylabel("BTC Price", color="purple", fontsize=14)
+ax2.set_ylabel("BTC News Web Searches", color="#FF0000", fontsize=14)
+
+ax1.plot(resampled_btc_price.mean().index, resampled_btc_price.mean().CLOSE, color="purple", linewidth=3, linestyle="dashed")
+ax2.plot(df_btc_search.MONTH[:74], df_btc_search.BTC_NEWS_SEARCH, color="#FF0000", linewidth=1, marker="o")
+
+plt.show()
+```
+
+
+### Multiple axes refresher
+
+```python
+df_ue_search_vs_rate = pd.read_csv("UE Benefits Search vs UE Rate 2004-20.csv")
+df_ue_search_vs_rate.MONTH = pd.to_datetime(df_ue_search_vs_rate.MONTH)
+x1 = plt.gca()
+x2 = x1.twinx()
+
+x1.plot(x, df_ue_search_vs_rate.UNRATE)
+x2.plot(x, df_ue_search_vs_rate.UE_BENEFITS_WEB_SEARCH)
+
+```
